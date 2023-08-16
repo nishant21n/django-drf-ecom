@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from mptt.models import MPTTModel, TreeForeignKey
 
-from .fields import OrdeField
+from .fields import OrderField
 
 
 class ActiveQuerySet(models.QuerySet):
@@ -58,7 +58,7 @@ class ProductLine(models.Model):
         Product, on_delete=models.CASCADE, related_name="product_line"
         )
     is_active = models.BooleanField(default=False)
-    order = OrdeField(unique_for_field="product", blank=True)
+    order = OrderField(unique_for_field="product", blank=True)
     objects = ActiveQuerySet.as_manager()
 
     def clean(self):
@@ -66,10 +66,32 @@ class ProductLine(models.Model):
         for obj in qs:
             if self.id != obj.id and self.order == obj.order:
                 raise ValidationError("Duplicate Value.")
-            
+   
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(ProductLine, self).save(*args, **kwargs)
-    
+
     def __str__(self):
         return str(self.sku)
+
+
+class ProductImage(models.Model):
+    alternative_text = models.CharField(max_length=100)
+    url = models.ImageField(upload_to=None, default="test.jpg")
+    productline = models.ForeignKey(
+        ProductLine, on_delete=models.CASCADE, related_name="product_image"
+    )
+    order = OrderField(unique_for_field="productline", blank=True)
+
+    def clean(self):
+        qs = ProductImage.objects.filter(productline=self.productline)
+        for obj in qs:
+            if self.id != obj.id and self.order == obj.order:
+                raise ValidationError("Duplicate value.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(ProductImage, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.order)

@@ -1,8 +1,13 @@
 from django.db import connection
+from django.db.models import Prefetch
 from drf_spectacular.utils import extend_schema
+from pygments import highlight
+from pygments.formatters import TerminalFormatter
+from pygments.lexers import SqlLexer
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from sqlparse import format
 
 from .models import Brand, Category, Product
 from .serializers import BrandSerializer, CategorySerializer, ProductSerializer
@@ -10,7 +15,7 @@ from .serializers import BrandSerializer, CategorySerializer, ProductSerializer
 
 class CategoryViewSet(viewsets.ViewSet):
     """
-    A simple viewset for viewing categories
+    A simple Viewset for viewing all categories
     """
 
     queryset = Category.objects.all()
@@ -23,7 +28,7 @@ class CategoryViewSet(viewsets.ViewSet):
 
 class BrandViewSet(viewsets.ViewSet):
     """
-    A simple viewset for viewing Brand
+    A simple Viewset for viewing all brands
     """
 
     queryset = Brand.objects.all()
@@ -45,7 +50,9 @@ class ProductViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, slug=None):
         serializer = ProductSerializer(
-            self.queryset.filter(slug=slug).select_related("category", "brand"),
+            Product.objects.filter(slug=slug)
+            .select_related("category", "brand")
+            .prefetch_related(Prefetch("product_line__product_image")),
             many=True,
         )
         data = Response(serializer.data)

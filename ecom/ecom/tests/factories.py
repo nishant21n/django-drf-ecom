@@ -1,6 +1,7 @@
 import factory
 
-from ecom.product.models import Brand, Category, Product, ProductLine
+from ecom.product.models import (Brand, Category, Product, ProductImage,
+                                 ProductLine)
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
@@ -32,9 +33,19 @@ class ProductFactory(factory.django.DjangoModelFactory):
 class ProductLineFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ProductLine
-        
+
     price = 10.00
     sku = "12345"
     stock_qty = 1
     product = factory.SubFactory(ProductFactory)
     is_active = True
+
+
+class ProductImageFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ProductImage
+
+    alternative_text = "test alternative text"
+    url = "test.jpg"
+    productline = factory.SubFactory(ProductLineFactory)
+    
