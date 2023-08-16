@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Model
 
 
-class OrdeField(models.PositiveIntegerField):
+class OrderField(models.PositiveIntegerField):
 
     description = "Ordering field on a unique field"
 
