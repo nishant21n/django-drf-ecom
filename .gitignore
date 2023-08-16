@@ -7,3 +7,5 @@ db.sqlite3
 .vscode
 schema.yml
 htmlcov/
+*-commands.md
+.DS_store
