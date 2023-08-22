@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from .models import (Attribute, AttributeValue, Brand, Category, Product,
+from .models import (Attribute, AttributeValue, Category, Product,
                      ProductImage, ProductLine, ProductType)
 
 
@@ -34,31 +34,30 @@ class ProductAdmin(admin.ModelAdmin):
     ]
 
 
-class AttributeValueInLine(admin.TabularInline):
+class AttributeValueInline(admin.TabularInline):
     model = AttributeValue.product_line_attribute_value.through
 
 
 class ProductLineAdmin(admin.ModelAdmin):
     inlines = [
         ProductImageInline,
-        AttributeValueInLine,
+        AttributeValueInline,
     ]
 
 
 class AttributeInline(admin.TabularInline):
-    model = Attribute.product_type_attribute.through 
+    model = Attribute.product_type_attribute.through
 
 
 class ProductTypeAdmin(admin.ModelAdmin):
     inlines = [
-        AttributeInline
+        AttributeInline,
     ]
-    
-    
+
+
 admin.site.register(ProductLine, ProductLineAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)
-admin.site.register(Brand)
 admin.site.register(Attribute)
 admin.site.register(ProductType, ProductTypeAdmin)
 admin.site.register(AttributeValue)
